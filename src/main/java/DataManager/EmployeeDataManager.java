@@ -27,7 +27,7 @@ public class EmployeeDataManager {
         InputStream timeLogStream = getClass().getClassLoader().getResourceAsStream(TIME_LOG_FILE);
 
         System.out.println("Checking file paths:");
-        
+
         if (employeeStream == null) {
             System.err.println("WARNING: Employee data file not found!");
         } else {
@@ -71,15 +71,15 @@ public class EmployeeDataManager {
 
     public List<Employee> getEmployees() {
         List<Employee> employees = new ArrayList<>();
-        
+
         // Access resource via classpath
         InputStream is = getClass().getClassLoader().getResourceAsStream(EMPLOYEE_DATA_FILE);
-        
+
         if (is == null) {
             System.err.println("WARNING: Employee data file not found in classpath!");
             return employees;
         }
-        
+
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
             // Skip header line
             String line = reader.readLine();
@@ -89,7 +89,7 @@ public class EmployeeDataManager {
                 String[] data = line.split("\t");
                 // Print the row for debugging
                 System.out.println("Processing row: " + line);
-                
+
                 if (data.length >= 18) { // Adjusted for removed phone number field
                     try {
                         String employeeNumber = data[0];
@@ -105,17 +105,17 @@ public class EmployeeDataManager {
                         String status = data[10];
                         String position = data[11];
                         String supervisor = data[12];
-                        
+
                         // Parse salary information
-                        double basicSalary = parseMoneyValue(data[12]); // Adjusted index
-                        double riceSubsidy = parseMoneyValue(data[13]); // Adjusted index
-                        double phoneAllowance = parseMoneyValue(data[14]); // Adjusted index
-                        double clothingAllowance = parseMoneyValue(data[15]); // Adjusted index
-                        
+                        double basicSalary = parseMoneyValue(data[13]); // Basic Salary is at index 13
+                        double riceSubsidy = parseMoneyValue(data[14]); // Rice Subsidy is at index 14
+                        double phoneAllowance = parseMoneyValue(data[15]); // Phone Allowance is at index 15
+                        double clothingAllowance = parseMoneyValue(data[16]); // Clothing Allowance is at index 16
+
                         // These may need to be calculated or extracted from your data
                         double grossSemiMonthlyRate = basicSalary / 2; // Approximation, adjust as needed
                         double hourlyRate = basicSalary / (8 * 22);   // Approximate hourly rate
-                        
+
                         Employee employee = new Employee(
                                 employeeNumber,
                                 lastName,
@@ -154,7 +154,7 @@ public class EmployeeDataManager {
 
         return employees;
     }
-    
+
     // Helper method to parse money values that might contain commas
     private double parseMoneyValue(String value) {
         if (value == null || value.trim().isEmpty()) {
@@ -188,7 +188,7 @@ public class EmployeeDataManager {
 
         // Access resource via classpath
         InputStream is = getClass().getClassLoader().getResourceAsStream(TIME_LOG_FILE);
-        
+
         if (is == null) {
             System.err.println("WARNING: Time log file not found in classpath!");
             return timeLogs;
@@ -211,8 +211,26 @@ public class EmployeeDataManager {
                         LocalDate date = LocalDate.parse(data[3], dateFormatter);
 
                         // Parse time entries (some might be empty)
-                        LocalTime timeIn = data[4].isEmpty() ? null : LocalTime.parse(data[4]);
-                        LocalTime timeOut = data[5].isEmpty() ? null : LocalTime.parse(data[5]);
+                        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
+                        LocalTime timeIn = null;
+                        if (!data[4].isEmpty()) {
+                            try {
+                                timeIn = LocalTime.parse(data[4], timeFormatter);
+                            } catch (Exception e) {
+                                System.err.println("Error parsing time log line: " + line + " - " + e.getMessage());
+                                // Continue with null timeIn
+                            }
+                        }
+
+                        LocalTime timeOut = null;
+                        if (!data[5].isEmpty()) {
+                            try {
+                                timeOut = LocalTime.parse(data[5], timeFormatter);
+                            } catch (Exception e) {
+                                System.err.println("Error parsing time log line: " + line + " - " + e.getMessage());
+                                // Continue with null timeOut
+                            }
+                        }
 
                         TimeLog timeLog = new TimeLog(employeeNumber, date, timeIn, timeOut);
                         timeLogs.add(timeLog);
@@ -420,7 +438,7 @@ public class EmployeeDataManager {
             // Get the path to write to
             String outputPath = System.getProperty("user.dir") + "/src/main/resources/" + EMPLOYEE_DATA_FILE;
             Path targetPath = Paths.get(outputPath);
-            
+
             // Replace the original file with the temp file
             Files.move(tempFile, targetPath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Successfully wrote " + employees.size() + " employees to file");
@@ -465,7 +483,7 @@ public class EmployeeDataManager {
             // Get the path to write to
             String outputPath = System.getProperty("user.dir") + "/src/main/resources/" + TIME_LOG_FILE;
             Path targetPath = Paths.get(outputPath);
-            
+
             // Replace the original file with the temp file
             Files.move(tempFile, targetPath, StandardCopyOption.REPLACE_EXISTING);
             System.out.println("Successfully wrote " + timeLogs.size() + " time logs to file");

@@ -1,7 +1,6 @@
-package Core;
-
 import Core.PayrollSystem;
 import FileReaders.DataLoader;
+import FileReaders.DataLoaderTest;
 import GUI.EmployeeListView;
 import GUI.EmployeeManagementPanel;
 import GUI.PayrollProcessingForm;
@@ -18,6 +17,11 @@ public class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        // Test the DataLoader fix first
+        System.out.println("Testing DataLoader fix...");
+        DataLoaderTest.testLoadTimeLogs();
+        System.out.println("DataLoader test completed.\n");
 
         // Create PayrollSystem which will load data in its constructor
         PayrollSystem payrollSystem = new PayrollSystem();

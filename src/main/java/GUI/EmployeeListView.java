@@ -1,8 +1,8 @@
 package GUI;
 
 import Core.Employee;
-import Core.Main;
 import Core.PayrollSystem;
+import GUI.EmployeeManagementPanel;
 
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
@@ -73,8 +73,17 @@ public class EmployeeListView extends JFrame {
 
     // New method to open the employee management panel
     private void openEmployeeManagementPanel() {
-        // Call static method directly
-        Main.showEmployeeManagementPanel(payrollSystem);
+        // Create and show the employee management panel directly
+        EmployeeManagementPanel panel = new EmployeeManagementPanel();
+        panel.setPayrollSystem(payrollSystem);
+
+        // Create a new frame for the panel
+        JFrame frame = new JFrame("Employee Management");
+        frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        frame.setSize(800, 600);
+        frame.add(panel);
+        frame.setLocationRelativeTo(null); // Center on screen
+        frame.setVisible(true);
     }
 
     // Rest of your class remains the same...

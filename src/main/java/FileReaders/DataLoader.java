@@ -113,7 +113,6 @@ public class DataLoader {
 
                 String line;
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
-                DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
 
                 while ((line = reader.readLine()) != null) {
                     String[] fields = line.split(",");  // Changed to comma separator for CSV format
@@ -130,12 +129,24 @@ public class DataLoader {
                         // Parse time in and time out
                         LocalTime timeIn = null;
                         if (!fields[4].isEmpty()) {
-                            timeIn = LocalTime.parse(fields[4], timeFormatter);
+                            try {
+                                timeIn = parseTimeString(fields[4]);
+                            } catch (Exception e) {
+                                System.err.println("Error parsing time log line: " + line + " - " + e.getMessage());
+                                // Continue with null timeIn instead of throwing the exception
+                                // No need to rethrow the exception
+                            }
                         }
 
                         LocalTime timeOut = null;
                         if (!fields[5].isEmpty()) {
-                            timeOut = LocalTime.parse(fields[5], timeFormatter);
+                            try {
+                                timeOut = parseTimeString(fields[5]);
+                            } catch (Exception e) {
+                                System.err.println("Error parsing time log line: " + line + " - " + e.getMessage());
+                                // Continue with null timeOut instead of throwing the exception
+                                // No need to rethrow the exception
+                            }
                         }
 
                         // Create TimeLog with the correct parameter types
@@ -557,6 +568,13 @@ public class DataLoader {
         if (value == null || value.trim().isEmpty()) {
             return 0.0;
         }
+
+        // Check if the value looks like a number (contains digits and possibly commas and decimal point)
+        if (!value.matches("^[\\d,]+(\\.[\\d]+)?$")) {
+            System.err.println("Error parsing money value: " + value);
+            return 0.0;
+        }
+
         // Remove commas and other non-numeric characters except for decimal point
         String cleanValue = value.replace(",", "").trim();
         try {
@@ -564,6 +582,38 @@ public class DataLoader {
         } catch (NumberFormatException e) {
             System.err.println("Error parsing money value: " + value);
             return 0.0;
+        }
+    }
+
+    /**
+     * Helper method to parse time strings in the format "H:mm" or "HH:mm"
+     * @param timeString The time string to parse
+     * @return A LocalTime object representing the parsed time
+     * @throws Exception If the time string cannot be parsed
+     */
+    private LocalTime parseTimeString(String timeString) throws Exception {
+        if (timeString == null || timeString.trim().isEmpty()) {
+            return null;
+        }
+
+        // Split the time string by colon
+        String[] parts = timeString.split(":");
+        if (parts.length != 2) {
+            throw new Exception("Invalid time format: " + timeString);
+        }
+
+        try {
+            int hour = Integer.parseInt(parts[0].trim());
+            int minute = Integer.parseInt(parts[1].trim());
+
+            // Validate hour and minute
+            if (hour < 0 || hour > 23 || minute < 0 || minute > 59) {
+                throw new Exception("Invalid time values: " + timeString);
+            }
+
+            return LocalTime.of(hour, minute);
+        } catch (NumberFormatException e) {
+            throw new Exception("Invalid time format: " + timeString);
         }
     }
 }
