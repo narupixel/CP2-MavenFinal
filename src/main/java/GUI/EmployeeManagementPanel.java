@@ -64,7 +64,7 @@ public class EmployeeManagementPanel extends JPanel {
 
         if (!employeeFile.exists()) {
             System.out.println("Employee data file not found at: " + employeeFile.getAbsolutePath());
-            
+
             // Check if resources are available in classpath
             if (getClass().getClassLoader().getResource("employee-data.tsv") != null) {
                 System.out.println("Employee data file found in classpath resources");
@@ -77,7 +77,7 @@ public class EmployeeManagementPanel extends JPanel {
 
         if (!timeLogFile.exists()) {
             System.out.println("Time log file not found at: " + timeLogFile.getAbsolutePath());
-            
+
             // Check if resources are available in classpath
             if (getClass().getClassLoader().getResource("attendance-record.csv") != null) {
                 System.out.println("Time log file found in classpath resources");
@@ -125,7 +125,7 @@ public class EmployeeManagementPanel extends JPanel {
         JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         JTextField searchField = new JTextField(20);
         JButton searchButton = new JButton("Search");
-        
+
         searchButton.addActionListener(e -> {
             String searchTerm = searchField.getText().toLowerCase().trim();
             if (searchTerm.isEmpty()) {
@@ -134,27 +134,27 @@ public class EmployeeManagementPanel extends JPanel {
                 filterEmployeeTable(searchTerm);
             }
         });
-        
+
         searchPanel.add(new JLabel("Search:"));
         searchPanel.add(searchField);
         searchPanel.add(searchButton);
-        
+
         panel.add(searchPanel, BorderLayout.NORTH);
-        
+
         return panel;
     }
 
     // Filter employee table based on search term
     private void filterEmployeeTable(String searchTerm) {
         tableModel.setRowCount(0);
-        
+
         for (Employee emp : payrollSystem.getAllEmployees()) {
             // Search in multiple fields
             if (emp.getEmployeeNumber().toLowerCase().contains(searchTerm) ||
                 emp.getLastName().toLowerCase().contains(searchTerm) ||
                 emp.getFirstName().toLowerCase().contains(searchTerm) ||
                 emp.getPosition().toLowerCase().contains(searchTerm)) {
-                
+
                 Object[] row = {
                     emp.getEmployeeNumber(),
                     emp.getLastName(),
@@ -255,7 +255,7 @@ public class EmployeeManagementPanel extends JPanel {
             txtBasicSalary.setText(String.valueOf(emp.getBasicSalary()));
             txtSssNumber.setText(emp.getSssNumber());
             txtPhilhealthNumber.setText(emp.getPhilhealthNumber());
-            txtPagibigNumber.setText(emp.getPagibigNumber());
+            txtPagibigNumber.setText(emp.getPagIbigNumber());
             txtTinNumber.setText(emp.getTinNumber());
             txtPosition.setText(emp.getPosition());
             txtRiceSubsidy.setText(String.valueOf(emp.getRiceSubsidy()));
@@ -272,53 +272,75 @@ public class EmployeeManagementPanel extends JPanel {
             // Get the selected employee number
             String employeeNumber = txtEmployeeNumber.getText();
 
-            // Create updated employee object
-            Employee updatedEmployee = new Employee(
-                    employeeNumber,
-                    txtLastName.getText(),
-                    txtFirstName.getText(),
-                    Double.parseDouble(txtBasicSalary.getText()),
-                    txtSssNumber.getText(),
-                    txtPhilhealthNumber.getText(),
-                    txtPagibigNumber.getText(),
-                    txtTinNumber.getText(),
-                    txtPosition.getText(),
-                    Double.parseDouble(txtRiceSubsidy.getText()),
-                    Double.parseDouble(txtPhoneAllowance.getText()),
-                    Double.parseDouble(txtClothingAllowance.getText())
-            );
-
-            // Update in memory first
-            payrollSystem.updateEmployee(employeeNumber, updatedEmployee);
-
-            // Then update in file system using EmployeeDataManager
-            boolean success = employeeDataManager.updateEmployee(updatedEmployee);
-
-            if (success) {
-                // Refresh the employee list in PayrollSystem
-                payrollSystem.setEmployees(employeeDataManager.getRefreshedEmployees());
-
-                // Refresh table
-                loadEmployeeData();
-
-                // Show success message
-                JOptionPane.showMessageDialog(this,
-                        "Employee record updated successfully!",
-                        "Success", JOptionPane.INFORMATION_MESSAGE);
-
-                // Clear form
-                clearForm();
-            } else {
-                JOptionPane.showMessageDialog(this,
-                        "Failed to update employee record.",
-                        "Error", JOptionPane.ERROR_MESSAGE);
+            // Find existing employee to get any values we don't have in the form
+            Employee existingEmployee = null;
+            for (Employee e : payrollSystem.getAllEmployees()) {
+                if (e.getEmployeeNumber().equals(employeeNumber)) {
+                    existingEmployee = e;
+                    break;
+                }
             }
-        } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this,
-                    "Please enter valid numeric values for salary and allowances.",
-                    "Invalid Input", JOptionPane.WARNING_MESSAGE);
+
+            if (existingEmployee == null) {
+                JOptionPane.showMessageDialog(this,
+                        "Could not find existing employee record.",
+                        "Error", JOptionPane.ERROR_MESSAGE);
         }
+
+        // Create updated employee object with all required parameters
+        Employee updatedEmployee = new Employee(
+                employeeNumber,                              // Employee Number
+                txtLastName.getText(),                       // Last Name
+                txtFirstName.getText(),                      // First Name
+                existingEmployee.getBirthDate(),             // Birth Date
+                existingEmployee.getAddress(),               // Address
+                existingEmployee.getPhoneNumber(),           // Phone Number
+                txtSssNumber.getText(),                      // SSS Number
+                txtPhilhealthNumber.getText(),               // Philhealth Number
+                txtTinNumber.getText(),                      // TIN Number
+                txtPagibigNumber.getText(),                  // Pagibig Number
+                existingEmployee.getStatus(),                // Employment Status
+                txtPosition.getText(),                       // Position
+                existingEmployee.getImmediateSupervisor(),   // Immediate Supervisor
+                Double.parseDouble(txtBasicSalary.getText()), // Basic Salary
+                Double.parseDouble(txtRiceSubsidy.getText()), // Rice Subsidy
+                Double.parseDouble(txtPhoneAllowance.getText()), // Phone Allowance
+                Double.parseDouble(txtClothingAllowance.getText()), // Clothing Allowance
+                existingEmployee.getGrossSemiMonthlyRate(),  // Gross Semi-Monthly Rate
+                existingEmployee.getHourlyRate()             // Hourly Rate
+        );
+
+        // Update in memory first
+        payrollSystem.updateEmployee(employeeNumber, updatedEmployee);
+
+        // Then update in file system using EmployeeDataManager
+        boolean success = employeeDataManager.updateEmployee(updatedEmployee);
+
+        if (success) {
+            // Refresh the employee list in PayrollSystem
+            payrollSystem.setEmployees(employeeDataManager.getRefreshedEmployees());
+
+            // Refresh table
+            loadEmployeeData();
+
+            // Show success message
+            JOptionPane.showMessageDialog(this,
+                    "Employee record updated successfully!",
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+
+            // Clear form
+            clearForm();
+        } else {
+            JOptionPane.showMessageDialog(this,
+                    "Failed to update employee record.",
+                    "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    } catch (NumberFormatException e) {
+        JOptionPane.showMessageDialog(this,
+                "Please enter valid numeric values for salary and allowances.",
+                "Invalid Input", JOptionPane.WARNING_MESSAGE);
     }
+}
 
     private void deleteEmployee() {
         String employeeNumber = txtEmployeeNumber.getText();

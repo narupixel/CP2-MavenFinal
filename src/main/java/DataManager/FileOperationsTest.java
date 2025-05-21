@@ -17,20 +17,27 @@ public class FileOperationsTest {
             Employee firstEmployee = employees.get(0);
             System.out.println("Testing update on employee: " + firstEmployee.getEmployeeNumber());
 
-            // Create updated employee with a small change
+            // Create updated employee with a small change - ensuring all parameters match constructor
             Employee updatedEmployee = new Employee(
                     firstEmployee.getEmployeeNumber(),
                     firstEmployee.getLastName(),
                     firstEmployee.getFirstName(),
-                    firstEmployee.getBasicSalary(),
+                    firstEmployee.getBirthDate(),
+                    firstEmployee.getAddress(),
+                    firstEmployee.getPhoneNumber(),
                     firstEmployee.getSssNumber(),
                     firstEmployee.getPhilhealthNumber(),
-                    firstEmployee.getPagibigNumber(),
                     firstEmployee.getTinNumber(),
+                    firstEmployee.getPagIbigNumber(),
+                    firstEmployee.getStatus(),
                     firstEmployee.getPosition(),
-                    firstEmployee.getRiceSubsidy() + 100, // Increase rice subsidy
+                    firstEmployee.getImmediateSupervisor(),
+                    firstEmployee.getBasicSalary(),
+                    firstEmployee.getRiceSubsidy() + 100,  // Adding 100 to rice subsidy
                     firstEmployee.getPhoneAllowance(),
-                    firstEmployee.getClothingAllowance()
+                    firstEmployee.getClothingAllowance(),
+                    firstEmployee.getGrossSemiMonthlyRate(),
+                    firstEmployee.getHourlyRate()
             );
 
             // Try to update

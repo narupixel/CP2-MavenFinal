@@ -99,7 +99,7 @@ public class EmployeeListView extends JFrame {
                     employee.getSssNumber(),
                     employee.getPhilhealthNumber(),
                     employee.getTinNumber(),
-                    employee.getPagibigNumber()
+                    employee.getPagIbigNumber()
             };
             tableModel.addRow(rowData);
         }

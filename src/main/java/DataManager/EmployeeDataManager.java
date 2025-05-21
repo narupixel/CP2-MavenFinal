@@ -69,7 +69,6 @@ public class EmployeeDataManager {
         }
     }
 
-    // Get all employees from the file
     public List<Employee> getEmployees() {
         List<Employee> employees = new ArrayList<>();
         
@@ -91,50 +90,60 @@ public class EmployeeDataManager {
                 // Print the row for debugging
                 System.out.println("Processing row: " + line);
                 
-                if (data.length >= 19) { // Adjust to match the actual TSV format
+                if (data.length >= 18) { // Adjusted for removed phone number field
                     try {
                         String employeeNumber = data[0];
                         String lastName = data[1];
                         String firstName = data[2];
-                        // Skip birthdate at index 3
-                        // Skip address at index 4
-                        // Skip phone at index 5
+                        String birthday = data[3];
+                        String address = data[4];
+                        String phoneNumber = data[5];
                         String sssNumber = data[6];
-                        String philhealthNumber = data[7];
-                        String pagibigNumber = data[8];
-                        String tinNumber = data[9];
-                        // Skip employmentStatus at index 10
+                        String philhealthNumber = data[7]; // All lowercase
+                        String tinNumber = data[8];
+                        String pagIbigNumber = data[9];    // With capital 'I'
+                        String status = data[10];
                         String position = data[11];
-                        // Skip supervisor at index 12
+                        String supervisor = data[12];
                         
                         // Parse salary information
-                        double basicSalary = parseMoneyValue(data[13]);
-                        double riceSubsidy = parseMoneyValue(data[14]);
-                        double phoneAllowance = parseMoneyValue(data[15]);
-                        double clothingAllowance = parseMoneyValue(data[16]);
+                        double basicSalary = parseMoneyValue(data[12]); // Adjusted index
+                        double riceSubsidy = parseMoneyValue(data[13]); // Adjusted index
+                        double phoneAllowance = parseMoneyValue(data[14]); // Adjusted index
+                        double clothingAllowance = parseMoneyValue(data[15]); // Adjusted index
+                        
+                        // These may need to be calculated or extracted from your data
+                        double grossSemiMonthlyRate = basicSalary / 2; // Approximation, adjust as needed
+                        double hourlyRate = basicSalary / (8 * 22);   // Approximate hourly rate
                         
                         Employee employee = new Employee(
                                 employeeNumber,
                                 lastName,
                                 firstName,
-                                basicSalary,
+                                birthday,
+                                address,
+                                phoneNumber,
                                 sssNumber,
-                                philhealthNumber,
-                                pagibigNumber,
+                                philhealthNumber, // All lowercase
                                 tinNumber,
+                                pagIbigNumber,    // With capital 'I'
+                                status,
                                 position,
+                                supervisor,
+                                basicSalary,
                                 riceSubsidy,
                                 phoneAllowance,
-                                clothingAllowance
+                                clothingAllowance,
+                                grossSemiMonthlyRate,
+                                hourlyRate
                         );
                         employees.add(employee);
                     } catch (Exception e) {
                         System.err.println("Error processing employee data row: " + e.getMessage());
                         e.printStackTrace();
-                        // Continue processing other rows instead of crashing
                     }
                 } else {
-                    System.err.println("Row has insufficient data: " + data.length + " columns, expected at least 19");
+                    System.err.println("Row has insufficient data: " + data.length + " columns, expected at least 18");
                 }
             }
             System.out.println("Successfully loaded " + employees.size() + " employees from file");
@@ -398,7 +407,7 @@ public class EmployeeDataManager {
                             emp.getPosition(),
                             emp.getSssNumber(),
                             emp.getPhilhealthNumber(),
-                            emp.getPagibigNumber(),
+                            emp.getPagIbigNumber(),
                             emp.getTinNumber(),
                             emp.getBasicSalary(),
                             emp.getRiceSubsidy(),

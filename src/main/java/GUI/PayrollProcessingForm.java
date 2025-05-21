@@ -194,7 +194,7 @@ public class PayrollProcessingForm extends JFrame {
         payslip.append(String.format("Position: %s\n", employee.getPosition()));
         payslip.append(String.format("SSS Number: %s\n", employee.getSssNumber()));
         payslip.append(String.format("PhilHealth Number: %s\n", employee.getPhilhealthNumber()));
-        payslip.append(String.format("Pag-IBIG Number: %s\n", employee.getPagibigNumber()));
+        payslip.append(String.format("Pag-IBIG Number: %s\n", employee.getPagIbigNumber()));
         payslip.append(String.format("Pay Period: %s to %s\n\n",
                 startDate.format(dateFormatter),
                 endDate.format(dateFormatter)));

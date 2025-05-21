@@ -37,7 +37,7 @@ public class EmployeeWriter {
                     employee.getSssNumber(),
                     employee.getPhilhealthNumber(),
                     employee.getTinNumber(),
-                    employee.getPagibigNumber(),
+                    employee.getPagIbigNumber(), // Corrected: capital 'I'
                     employee.getPosition(),
                     employee.getBasicSalary(),
                     employee.getRiceSubsidy(),

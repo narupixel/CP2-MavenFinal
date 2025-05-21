@@ -20,10 +20,12 @@ public class NewEmployeeForm extends JFrame {
     private JTextField sssNumberField;
     private JTextField philhealthNumberField;
     private JTextField tinNumberField;
-    private JTextField pagibigNumberField;
+    private JTextField pagIbigNumberField;
     private JTextField riceSubsidyField;
     private JTextField phoneAllowanceField;
     private JTextField clothingAllowanceField;
+    private JTextField addressField;  // Add this field
+    private JTextField phoneNumberField;  // Add this field
 
     public NewEmployeeForm(EmployeeListView parentFrame, PayrollSystem payrollSystem) {
         this.parentFrame = parentFrame;
@@ -55,6 +57,16 @@ public class NewEmployeeForm extends JFrame {
         firstNameField = new JTextField();
         formPanel.add(firstNameField);
 
+        // Add address field
+        formPanel.add(new JLabel("Address:"));
+        addressField = new JTextField();
+        formPanel.add(addressField);
+
+        // Add phone number field
+        formPanel.add(new JLabel("Phone Number:"));
+        phoneNumberField = new JTextField();
+        formPanel.add(phoneNumberField);
+
         formPanel.add(new JLabel("Position:"));
         positionField = new JTextField();
         formPanel.add(positionField);
@@ -76,8 +88,8 @@ public class NewEmployeeForm extends JFrame {
         formPanel.add(tinNumberField);
 
         formPanel.add(new JLabel("Pag-IBIG Number:"));
-        pagibigNumberField = new JTextField();
-        formPanel.add(pagibigNumberField);
+        pagIbigNumberField = new JTextField();
+        formPanel.add(pagIbigNumberField);
 
         formPanel.add(new JLabel("Rice Subsidy:"));
         riceSubsidyField = new JTextField();
@@ -124,20 +136,31 @@ public class NewEmployeeForm extends JFrame {
             double phoneAllowance = Double.parseDouble(phoneAllowanceField.getText());
             double clothingAllowance = Double.parseDouble(clothingAllowanceField.getText());
 
-            // Create new employee with TIN - match the order with Employee constructor
+            // Additional required amounts (with default values - adjust as needed)
+            double semiMonthlyRate = basicSalary / 2;
+            double hourlyRate = basicSalary / 22 / 8; // Assuming 22 working days per month, 8 hours per day
+
+            // Create new employee - match the order with Employee constructor
             Employee newEmployee = new Employee(
                     employeeNumberField.getText(),          // String employeeNumber
                     lastNameField.getText(),                // String lastName
                     firstNameField.getText(),               // String firstName
-                    basicSalary,                            // double basicSalary
+                    "",                                     // String birthDate (empty for now)
+                    addressField.getText(),                 // String address (new field)
+                    phoneNumberField.getText(),             // String phoneNumber (new field)
                     sssNumberField.getText(),               // String sssNumber
                     philhealthNumberField.getText(),        // String philhealthNumber
-                    pagibigNumberField.getText(),           // String pagibigNumber
-                    tinNumberField.getText(),               // String tinNumber - NOTE THIS POSITION
+                    tinNumberField.getText(),               // String tinNumber
+                    pagIbigNumberField.getText(),           // String pagIbigNumber
+                    "",                                     // String employmentStatus (empty for now)
                     positionField.getText(),                // String position
+                    "",                                     // String immediateSupervisor (empty for now)
+                    basicSalary,                            // double basicSalary
                     riceSubsidy,                            // double riceSubsidy
                     phoneAllowance,                         // double phoneAllowance
-                    clothingAllowance                       // double clothingAllowance
+                    clothingAllowance,                      // double clothingAllowance
+                    semiMonthlyRate,                        // double grossSemiMonthlyRate
+                    hourlyRate                              // double hourlyRate
             );
 
             // Add to payroll system

@@ -4,128 +4,130 @@ public class Employee {
     private String employeeNumber;
     private String lastName;
     private String firstName;
-    private double basicSalary;
+    private String birthDate;
+    private String address;         // Add this field
+    private String phoneNumber;     // Add this field
     private String sssNumber;
     private String philhealthNumber;
-    private String pagibigNumber;
     private String tinNumber;
+    private String pagIbigNumber;
+    private String status;
     private String position;
+    private String immediateSupervisor;
+    private double basicSalary;
     private double riceSubsidy;
     private double phoneAllowance;
     private double clothingAllowance;
+    private double grossSemiMonthlyRate;
+    private double hourlyRate;
 
-    public Employee(String employeeNumber, String lastName, String firstName,
-                    double basicSalary, String sssNumber, String philhealthNumber,
-                    String pagibigNumber, String tinNumber, String position,
-                    double riceSubsidy, double phoneAllowance, double clothingAllowance) {
+    // Constructor
+    public Employee(
+        String employeeNumber, String lastName, String firstName, String birthDate,
+        String address, String phoneNumber, String sssNumber, String philhealthNumber,
+        String tinNumber, String pagIbigNumber, String employmentStatus, String position,
+        String immediateSupervisor, double basicSalary, double riceSubsidy, 
+        double phoneAllowance, double clothingAllowance, double grossSemiMonthlyRate, double hourlyRate) {
+        
         this.employeeNumber = employeeNumber;
         this.lastName = lastName;
         this.firstName = firstName;
-        this.basicSalary = basicSalary;
+        this.birthDate = birthDate;
+        this.address = address;
+        this.phoneNumber = phoneNumber;
         this.sssNumber = sssNumber;
         this.philhealthNumber = philhealthNumber;
-        this.pagibigNumber = pagibigNumber;
         this.tinNumber = tinNumber;
+        this.pagIbigNumber = pagIbigNumber;
+        this.status = employmentStatus;
         this.position = position;
+        this.immediateSupervisor = immediateSupervisor;
+        this.basicSalary = basicSalary;
         this.riceSubsidy = riceSubsidy;
         this.phoneAllowance = phoneAllowance;
         this.clothingAllowance = clothingAllowance;
+        this.grossSemiMonthlyRate = grossSemiMonthlyRate;
+        this.hourlyRate = hourlyRate;
     }
 
-    // Getters and setters
-    public String getEmployeeNumber() {
-        return employeeNumber;
+    // Add getters for the new fields
+    public String getAddress() {
+        return address;
     }
-
+    
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+    
+    // Existing getters and setters...
     public void setEmployeeNumber(String employeeNumber) {
         this.employeeNumber = employeeNumber;
+    }
+    public String getEmployeeNumber() {
+        return employeeNumber;
     }
 
     public String getLastName() {
         return lastName;
     }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
-
     public String getFirstName() {
         return firstName;
     }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
-
-    public double getBasicSalary() {
-        return basicSalary;
-    }
-
-    public void setBasicSalary(double basicSalary) {
-        this.basicSalary = basicSalary;
+    public String getBirthDate() {
+        return birthDate;
     }
 
     public String getSssNumber() {
         return sssNumber;
     }
 
-    public void setSssNumber(String sssNumber) {
-        this.sssNumber = sssNumber;
-    }
-
     public String getPhilhealthNumber() {
         return philhealthNumber;
-    }
-
-    public void setPhilhealthNumber(String philhealthNumber) {
-        this.philhealthNumber = philhealthNumber;
-    }
-
-    public String getPagibigNumber() {
-        return pagibigNumber;
-    }
-
-    public void setPagibigNumber(String pagibigNumber) {
-        this.pagibigNumber = pagibigNumber;
     }
 
     public String getTinNumber() {
         return tinNumber;
     }
 
-    public void setTinNumber(String tinNumber) {
-        this.tinNumber = tinNumber;
+    public String getPagIbigNumber() {
+        return pagIbigNumber;
+    }
+
+    public String getStatus() {
+        return status;
     }
 
     public String getPosition() {
         return position;
     }
 
-    public void setPosition(String position) {
-        this.position = position;
+    public String getImmediateSupervisor() {
+        return immediateSupervisor;
+    }
+
+    public double getBasicSalary() {
+        return basicSalary;
     }
 
     public double getRiceSubsidy() {
         return riceSubsidy;
     }
 
-    public void setRiceSubsidy(double riceSubsidy) {
-        this.riceSubsidy = riceSubsidy;
-    }
-
     public double getPhoneAllowance() {
         return phoneAllowance;
-    }
-
-    public void setPhoneAllowance(double phoneAllowance) {
-        this.phoneAllowance = phoneAllowance;
     }
 
     public double getClothingAllowance() {
         return clothingAllowance;
     }
 
-    public void setClothingAllowance(double clothingAllowance) {
-        this.clothingAllowance = clothingAllowance;
+    public double getGrossSemiMonthlyRate() {
+        return grossSemiMonthlyRate;
+    }
+
+    public double getHourlyRate() {
+        return hourlyRate;
     }
 }

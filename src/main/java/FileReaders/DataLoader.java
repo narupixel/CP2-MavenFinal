@@ -40,7 +40,7 @@ public class DataLoader {
                 String line;
                 while ((line = reader.readLine()) != null) {
                     String[] fields = line.split("\t");
-                    
+
                     if (fields.length < 17) {
                         System.err.println("Invalid employee data format (not enough fields): " + line);
                         continue;
@@ -50,23 +50,31 @@ public class DataLoader {
                         String employeeNumber = fields[0];
                         String lastName = fields[1];
                         String firstName = fields[2];
-                        // Skip fields 3-5 (birthdate, address, phone)
+                        // Extract birth date, address, phone number
+                        String birthDate = fields.length > 3 ? fields[3] : "";
+                        String address = fields.length > 4 ? fields[4] : "";
+                        String phoneNumber = fields.length > 5 ? fields[5] : "";
                         String sssNumber = fields[6];
                         String philhealthNumber = fields[7];
-                        String pagibigNumber = fields[9]; // Correct index for Pag-ibig
-                        String tinNumber = fields[8]; // Correct index for TIN
-                        // fields[10] is employment status
+                        String tinNumber = fields[8];
+                        String pagibigNumber = fields[9];
+                        String employmentStatus = fields.length > 10 ? fields[10] : "";
                         String position = fields[11];
-                        // Skip immediate supervisor field[12]
+                        String immediateSupervisor = fields.length > 12 ? fields[12] : "";
                         double basicSalary = parseMoneyValue(fields[13]);
                         double riceSubsidy = parseMoneyValue(fields[14]);
                         double phoneAllowance = parseMoneyValue(fields[15]);
                         double clothingAllowance = parseMoneyValue(fields[16]);
+                        // Default values for potentially missing fields
+                        double grossSemiMonthlyRate = basicSalary / 2; // Assuming semi-monthly rate is half of basic
+                        double hourlyRate = basicSalary / (22 * 8); // Assuming 22 working days per month, 8 hours per day
 
                         Employee employee = new Employee(
-                                employeeNumber, lastName, firstName, basicSalary,
-                                sssNumber, philhealthNumber, pagibigNumber,
-                                tinNumber, position, riceSubsidy, phoneAllowance, clothingAllowance
+                                employeeNumber, lastName, firstName, birthDate, 
+                                address, phoneNumber, sssNumber, philhealthNumber,
+                                tinNumber, pagibigNumber, employmentStatus, position, 
+                                immediateSupervisor, basicSalary, riceSubsidy, phoneAllowance, clothingAllowance, 
+                                grossSemiMonthlyRate, hourlyRate
                         );
 
                         employees.add(employee);
@@ -77,7 +85,7 @@ public class DataLoader {
                     }
                 }
             }
-            
+
             System.out.println("Successfully loaded " + employees.size() + " employees");
 
         } catch (IOException e) {
@@ -106,10 +114,10 @@ public class DataLoader {
                 String line;
                 DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
                 DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("H:mm");
-                
+
                 while ((line = reader.readLine()) != null) {
                     String[] fields = line.split(",");  // Changed to comma separator for CSV format
-                    
+
                     if (fields.length < 6) {
                         System.err.println("Invalid time log format (not enough fields): " + line);
                         continue;
@@ -138,7 +146,7 @@ public class DataLoader {
                     }
                 }
             }
-            
+
             System.out.println("Successfully loaded " + timeLogs.size() + " time logs");
 
         } catch (IOException e) {
@@ -161,7 +169,7 @@ public class DataLoader {
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
-            
+
             // First, read the entire file to get the header and existing data
             List<String> lines = new ArrayList<>();
             String header = "";
@@ -201,7 +209,7 @@ public class DataLoader {
                     employee.getSssNumber(),
                     employee.getPhilhealthNumber(),
                     employee.getTinNumber(),
-                    employee.getPagibigNumber(),
+                    employee.getPagIbigNumber(),
                     "Regular", // Status placeholder
                     employee.getPosition(),
                     "", // Supervisor placeholder
@@ -247,7 +255,7 @@ public class DataLoader {
             if (!outputDir.exists()) {
                 outputDir.mkdirs();
             }
-            
+
             // First, read the entire file to get the header and existing data
             List<String> lines = new ArrayList<>();
             String header = "";
@@ -331,7 +339,7 @@ public class DataLoader {
                 System.err.println("Employee file does not exist. Cannot update.");
                 return false;
             }
-            
+
             // Read the entire file
             List<String> lines = new ArrayList<>();
             String header = "";
@@ -345,7 +353,7 @@ public class DataLoader {
                 while ((line = reader.readLine()) != null) {
                     String[] fields = line.split("\t");
                     if (fields.length == 0) continue;
-                    
+
                     String employeeNumber = fields[0];
 
                     if (employeeNumber.equals(updatedEmployee.getEmployeeNumber())) {
@@ -360,7 +368,7 @@ public class DataLoader {
                                 updatedEmployee.getSssNumber(),
                                 updatedEmployee.getPhilhealthNumber(),
                                 updatedEmployee.getTinNumber(),
-                                updatedEmployee.getPagibigNumber(),
+                                updatedEmployee.getPagIbigNumber(),
                                 fields.length > 10 ? fields[10] : "Regular", // Preserve existing status
                                 updatedEmployee.getPosition(),
                                 fields.length > 12 ? fields[12] : "", // Preserve existing supervisor
@@ -401,25 +409,25 @@ public class DataLoader {
             return false;
         }
     }
-    
+
     /**
      * Loads the SSS contribution table from the resource file
      * @return A list of SSS contribution ranges and amounts
      */
     public List<SSSContribution> loadSSSContributions() {
         List<SSSContribution> contributions = new ArrayList<>();
-        
+
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream(SSS_CONTRIBUTION_FILE_PATH);
             if (is == null) {
                 System.err.println("Error: Could not find resource " + SSS_CONTRIBUTION_FILE_PATH);
                 return contributions;
             }
-            
+
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                 // Skip header line
                 reader.readLine();
-                
+
                 String line;
                 while ((line = reader.readLine()) != null) {
                     try {
@@ -428,7 +436,7 @@ public class DataLoader {
                             double minRange = Double.parseDouble(fields[0].trim());
                             double maxRange = Double.parseDouble(fields[2].trim());
                             double contributionAmount = Double.parseDouble(fields[3].trim());
-                            
+
                             SSSContribution contribution = new SSSContribution(minRange, maxRange, contributionAmount);
                             contributions.add(contribution);
                         }
@@ -437,35 +445,35 @@ public class DataLoader {
                     }
                 }
             }
-            
+
             System.out.println("Successfully loaded " + contributions.size() + " SSS contribution ranges");
-            
+
         } catch (IOException e) {
             System.err.println("Error loading SSS contribution data: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return contributions;
     }
-    
+
     /**
      * Loads the withholding tax table from the resource file
      * @return A list of tax brackets
      */
     public List<TaxBracket> loadWithholdingTaxTable() {
         List<TaxBracket> taxBrackets = new ArrayList<>();
-        
+
         try {
             InputStream is = getClass().getClassLoader().getResourceAsStream(WITHHOLDING_TAX_FILE_PATH);
             if (is == null) {
                 System.err.println("Error: Could not find resource " + WITHHOLDING_TAX_FILE_PATH);
                 return taxBrackets;
             }
-            
+
             try (BufferedReader reader = new BufferedReader(new InputStreamReader(is))) {
                 // Skip header line
                 reader.readLine();
-                
+
                 String line;
                 while ((line = reader.readLine()) != null) {
                     try {
@@ -475,7 +483,7 @@ public class DataLoader {
                             double lowerLimit = Double.parseDouble(fields[1].trim());
                             double taxRate = Double.parseDouble(fields[2].trim());
                             double baseAmount = Double.parseDouble(fields[3].trim());
-                            
+
                             TaxBracket bracket = new TaxBracket(upperLimit, lowerLimit, taxRate, baseAmount);
                             taxBrackets.add(bracket);
                         }
@@ -484,66 +492,66 @@ public class DataLoader {
                     }
                 }
             }
-            
+
             System.out.println("Successfully loaded " + taxBrackets.size() + " tax brackets");
-            
+
         } catch (IOException e) {
             System.err.println("Error loading withholding tax data: " + e.getMessage());
             e.printStackTrace();
         }
-        
+
         return taxBrackets;
     }
-    
+
     // Helper class for SSS contribution ranges
     public static class SSSContribution {
         private double minSalary;
         private double maxSalary;
         private double contributionAmount;
-        
+
         public SSSContribution(double minSalary, double maxSalary, double contributionAmount) {
             this.minSalary = minSalary;
             this.maxSalary = maxSalary;
             this.contributionAmount = contributionAmount;
         }
-        
+
         public double getMinSalary() { return minSalary; }
         public double getMaxSalary() { return maxSalary; }
         public double getContributionAmount() { return contributionAmount; }
-        
+
         public boolean inRange(double salary) {
             return salary >= minSalary && salary <= maxSalary;
         }
     }
-    
+
     // Helper class for tax brackets
     public static class TaxBracket {
         private double upperLimit;
         private double lowerLimit;
         private double taxRate;
         private double baseAmount;
-        
+
         public TaxBracket(double upperLimit, double lowerLimit, double taxRate, double baseAmount) {
             this.upperLimit = upperLimit;
             this.lowerLimit = lowerLimit;
             this.taxRate = taxRate;
             this.baseAmount = baseAmount;
         }
-        
+
         public double getUpperLimit() { return upperLimit; }
         public double getLowerLimit() { return lowerLimit; }
         public double getTaxRate() { return taxRate; }
         public double getBaseAmount() { return baseAmount; }
-        
+
         public boolean inBracket(double income) {
             return income > lowerLimit && income <= upperLimit;
         }
-        
+
         public double calculateTax(double income) {
             return baseAmount + (income - lowerLimit) * taxRate;
         }
     }
-    
+
     // Helper method to parse money values that might contain commas
     private double parseMoneyValue(String value) {
         if (value == null || value.trim().isEmpty()) {
